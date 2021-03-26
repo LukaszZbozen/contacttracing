@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.znu16qvu.contactTracing" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0"  xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>ContactTracing</name>
+    <description>
+        Contact Tracing Mobile application with intention of respecting privacy of the user by usage of QR code without location and Bluetooth.
+    </description>
+    <author email="znu16qvu@uea.ac.uk" href="https://lukaszzbozen.github.io/">
+        Lukasz Zbozen/znu16qvu/100170451
+    </author>
+
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+	<allow-intent href="*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+	<access origin="*" />
+
+<feature name="Storage">
+    <param name="android-package" value="org.apache.cordova.Storage" />
+</feature>
+<gap:plugin name="Notification" value="org.apache.cordova.Notification"/>
+
+    <platform name="android">
+	<allow-intent href="market:*" />
+	<allow-intent href="*" />
+	<access origin="*" /> 
+
+<preferance name="android-usesCleartextTraffic" value="true" /> <allow-navigation href="*" />
+    </platform>
+	
+	
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+	<resource-file src="google-services.json" target="app/google-services.json" />
+	<preference name='phonegap-version' value='cli-6.5.0' />
+	<preference name='pgb-builder-version' value='2' />
+
+	
+</widget>

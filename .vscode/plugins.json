@@ -1,0 +1,1 @@
+{"plugins":["cordova-plugin-whitelist","cordova-plugin-camera","phonegap-plugin-barcodescanner","cordova-plugin-inappbrowser","phonegap-plugin-multidex","cordova-plugin-device","cordova-plugin-badge","cordova-plugin-dialogs","cordova-plugin-zip","cordova-plugin-file","cordova-plugin-local-notification"]}

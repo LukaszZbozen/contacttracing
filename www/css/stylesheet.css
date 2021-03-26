@@ -1,0 +1,168 @@
+html,
+body {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-family: "Lato", Helvetica, sans-serif;
+    text-align: center;
+    background-color: ghostwhite;
+    
+}
+
+
+/* Hide other links with this class at the start up */
+.appSPA {
+    display: none;
+}
+
+
+.indexMenu {
+    text-align: center;
+    font-weight: bold;
+}
+
+
+
+/* Menu styling for a tag buttons */
+.linkButton {
+    background-color: #ffffff;
+    display: inline-block;
+    width: 70%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
+
+.linkConfirm {
+    background-color: #8c52ff;
+    display: inline-block;
+    font-weight: bold;
+    width: 70%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    margin: 4px 2px;
+    border-radius: 5px;
+}
+
+.topSection {
+    position: relative;
+}
+
+
+/* Logo to be in top left corner at all times */
+#logo {
+    position:absolute; 
+	top: -10.5%; 
+	left: 18.5%; 
+}
+
+#socialDistancing {
+    position: relative;
+    height: 150px;
+    width: auto;
+    left: 2%;
+}
+
+/* Menu styling for buttons with button tag */
+.menuButton {
+    background-color: #ffffff;
+    display: inline-block;
+    width: 70%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+  }
+
+.inputSection { 
+    display: block;
+    padding: 15px;
+    margin: 5%;
+    position: relative;
+    left: 15%;
+}
+
+.labelReport {
+    float:left;
+    margin: 5px 0px;
+    height:100px;
+    width:100px;
+    position:relative;
+
+}
+
+#resultID {
+    float:left;
+    margin: 25px 15px 5px 0px;
+
+    position:relative;
+    left: 30%;
+}
+
+.reportBox {
+    height:30px;
+    padding-bottom: 35px;
+    width: 50%;
+    margin: 38px 80px;
+    border: 1px solid black;
+    border-radius: 5px;
+    z-index: -1;
+}
+
+
+.clear {
+    clear: both;
+}
+
+  /* Design of a arrow to represent a back button in the mobile app */
+  .back-button {
+	display: inline-block;
+	margin: 0 auto;
+	padding: 37px 28px;
+	border-radius: 50%;
+    position:fixed; 
+	top: 0; 
+	left: -3%; 
+}
+
+.arrow {
+    
+	position: relative;
+	display: block;
+	width: 20px;
+	height: 2px;
+	background-color: #000000;
+}
+.arrow:before,
+.arrow:after {
+	content: '';
+	position: absolute;
+}
+.arrow:before {
+	top: -5px;
+	left: -8px;
+	width: 0; 
+	height: 0; 
+	border-top: 6px solid transparent;
+	border-bottom: 6px solid transparent; 
+	border-right:8px solid #000000; 
+}
+/* Arrow button design ends here */
+
+
