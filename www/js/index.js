@@ -30,12 +30,11 @@ function onDeviceReady() {
     document.getElementById('deviceIdReport').value=uniqueDeviceID;
 
     invokeDatabase.createDatabase();
-    
-    
+  
     
     // When user releases finger from the selected option - ("touchend"), run qrCodeScanner function.
     document.querySelector("#qrCodeScanner").addEventListener("touchend", qrCodeScanner, false);
-
+    
 }
 
 
@@ -65,6 +64,7 @@ function qrCodeScanner(){
             $('#qrLocation').val(locationCheck);
 
             // Output details to the user of scanned QR code
+            document.getElementById("yourDeviceId").innerHTML = "Device ID: " + uniqueDeviceID;
             document.getElementById("seatData").innerHTML = "Seat number: " + seatId;
             document.getElementById("locationData").innerHTML = "Location: " + locationCheck;
             /*           
@@ -72,7 +72,7 @@ function qrCodeScanner(){
             */
             if (seatId != "" && locationCheck != "") {
 
-                tracingQueries.storeContact(uniqueDeviceID ,seatId, locationCheck);
+                //tracingQueries.storeContact(uniqueDeviceID ,seatId, locationCheck);
 
                 document.getElementById("qrCheckin").style.display="block";
                 
@@ -107,11 +107,11 @@ function qrCodeScanner(){
 // When QR scan is submitted to a input field, confirm to store in database or scan again
 function addQRCheckIn() {
 
-    var qrDeviceId = $('#qrDeviceId').val(uniqueDeviceID);
+    var qrDeviceId = $('#qrDeviceId').val();
     var qrSeat = $('#qrseatId').val();
     var qrlocationSession = $('#qrLocation').val();
 
-    if (qrSeat == "" && qrDeviceId == "" &&  qrlocationSession) { 
+    if (qrSeat == "" && qrDeviceId == "" &&  qrlocationSession == "") { 
         swal({
             title: "You must scan a QR code!",
             text: "Please try again or use manual check-in!",
@@ -119,6 +119,8 @@ function addQRCheckIn() {
             button: "Confirm",
             });
     } else {
+        tracingQueries.storeContact(qrDeviceId ,qrSeat, qrlocationSession);
+
         swal({
             title: "You have checked in successfully!",
             text: "Press the button to proceed",
@@ -146,12 +148,8 @@ function notify() {
 }
 
 
-var mobileDevice;
-var testResult;
-
-var locationCheck;
-var dateCheck;
-var timeCheck;
+var positiveDevices;
+var negativeDevices;
 function getContacts () {
     invokeDatabase.db.transaction(
 
@@ -164,8 +162,8 @@ function getContacts () {
                 console.log("Rows found: " + lenTracing);
                 
                 // Arrays to store individual details from database for comparison if a device should get a notification
-                var positiveDevices = []; 
-                var negativeDevices = [];
+                positiveDevices = []; 
+                negativeDevices = [];
 
                 var positiveLocations = [];
                 var negativeLocations = [];
@@ -175,11 +173,11 @@ function getContacts () {
                 
                 // Loop the contacts in database
                 for(var i = 0; i<lenTracing; i++){
-                    mobileDevice = results.rows.item(i).deviceID;
-                    testResult = results.rows.item(i).test;
-                    locationCheck = results.rows.item(i).location;
-                    dateCheck = results.rows.item(i).whenAtDate;
-                    timeCheck = results.rows.item(i).whenAtTime;
+                    var mobileDevice = results.rows.item(i).deviceID;
+                    var testResult = results.rows.item(i).test;
+                    var locationCheck = results.rows.item(i).location;
+                    var dateCheck = results.rows.item(i).whenAtDate;
+                    var timeCheck = results.rows.item(i).whenAtTime;
                     
 
                     // If device did not report test result add to negativeDevices array otherwise positiveDevices array.
@@ -189,6 +187,8 @@ function getContacts () {
                         negativeLocations.push(locationCheck);
 
                         negativeDates.push(dateCheck);
+                    
+                        
 
                     } else {
                         positiveDevices.push("Device ID: " + mobileDevice);
@@ -213,9 +213,11 @@ function getContacts () {
 
                 
                 // Check if location element in negativeDevices array also exists in positiveDevices and is greater or equal to 1
-                const isLocationTrue = negativeLocations.some(locationString=> positiveLocations.includes(locationString) >= 1);
+                const isLocationTrue = negativeLocations.some(locationString=> positiveLocations.includes(locationString) >= 2);
 
-                const isDateTheSame = negativeDates.some(dateString=> positiveDates.includes(dateString) >= 1);
+
+                // Check if date element in negativeDates array also exists in positiveDates and is greater or equal to 1
+                const isDateTheSame = negativeDates.some(dateString=> positiveDates.includes(dateString) >= 2);
 
                 console.log("Is positive test result reported in the same location? " + isLocationTrue);
 
@@ -226,6 +228,7 @@ function getContacts () {
                 // If negative device is in the same location as positive decide AND on the same module
                 if (isLocationTrue === true && isDateTheSame === true) {
                     
+                    console.log("Notification displays on mobile devices...");
                     
                     // Set mobile LED to blink
                     cordova.plugins.notification.local.setDefaults({
@@ -239,6 +242,15 @@ function getContacts () {
                         text: 'You have been exposed in an area of someone who tested positive. Please book a test and self-isolate!',
                         foreground: true
                     });
+                } else {
+                    
+                    // If no exposures output an alert
+                    swal({
+                        title: "No new exposure notifications.",
+                        text: "Stay safe!",
+                        icon: "success",
+                        button: "Confirm",
+                        });
                 }
 
             })
@@ -292,13 +304,24 @@ function addManualCheckIn() {
     var deviceID = $('#deviceIdManual').val();
     var seat = $('#seatIdManual').val();
 
+    // Assign location to capital letters after submission to Web SQL
     var locationSession = $('#locationManual').val().toUpperCase();
+
+    //Restrict user from entering spaces in the input field
+    $('#locationManual').keypress(function (evt) {
+        var keycode = evt.charCode || evt.keyCode;
+        if (keycode == 32) {
+            return false;
+        }
+    });
+
     
+
+    const labsArray = ['CMPSCI', 'AGACLAB', 'CYBERLAB', 'DATASCIENCE', 'LAB1', 'LAB2', 'MSCLAB',
+    'cmpsci', 'agaclab', 'cyberlab', 'datascience', 'lab1', 'lab2', 'msclab'];
     
-    const labsArray = ['CMPSCI', 'AGACLAB', 'CYBERLAB', 'DATASCIENCE', 'LAB1', 'LAB2', 'MSCLAB'];
-    
-        // Check for empty fields.
-       if (seat == "" || locationSession == "" ) {
+        // Check for empty fields and if array matches the input.
+       if (seat == "" || locationSession == "" || labsArray.indexOf(locationSession) < 0) {
         swal({
             title: "Please enter valid information!",
             text: "This is written on your seat...",

@@ -21,12 +21,27 @@ body {
     font-weight: bold;
 }
 
-
+a {
+    width: 54%;
+    background-color: #ffffff;
+    display: inline-block;
+    border: solid;
+    table-layout: fixed;
+    border-collapse: collapse;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
 
 /* Menu styling for a tag buttons */
 .linkButton {
     background-color: #ffffff;
     display: inline-block;
+    border: solid;
     width: 70%;
     table-layout: fixed;
     border-collapse: collapse;
@@ -59,6 +74,26 @@ body {
     position: relative;
 }
 
+.moveHR {
+    position: relative;
+    bottom: 60px;
+}
+  
+
+#notificationBell {
+    display: inline-block;
+    position: relative;
+    left: 30%;
+    bottom: 65px;
+    background-color: ghostwhite;
+    border-radius: 20px;
+    height: auto;
+    width: 45px;
+    cursor: pointer;
+    border: none;
+    
+}
+
 
 /* Logo to be in top left corner at all times */
 #logo {
@@ -69,9 +104,10 @@ body {
 
 #socialDistancing {
     position: relative;
-    height: 150px;
+    height: 140px;
     width: auto;
     left: 2%;
+    bottom: 30px;
 }
 
 /* Menu styling for buttons with button tag */
@@ -85,10 +121,27 @@ body {
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
+    border:solid;
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
   }
+
+.aStyling {
+    background-color: #ffffff;
+    display: inline-block;
+    width: 55%;
+    table-layout: fixed;
+    border: solid;
+    border-collapse: collapse;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
 
 .inputSection { 
     display: block;

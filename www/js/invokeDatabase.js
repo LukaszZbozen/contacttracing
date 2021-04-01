@@ -43,10 +43,6 @@ var invokeDatabase = {
             }
         );
 
-        
-
-        
-
         this.db.transaction(function(tx) {
             /* Create table tracing to store check ins
              */

@@ -1,0 +1,8 @@
+POST http://localhost:3000/
+Content-Type: application/json
+
+{
+    "deviceId":"FPWF0932IJF",
+    "seatId":"3",
+    "location": "CMPSCI"
+}
