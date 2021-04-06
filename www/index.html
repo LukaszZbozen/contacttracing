@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
 
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; media-src *;  img-src * filesystem: data:">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; media-src *;  img-src * filesystem: data: ">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -14,7 +14,17 @@
         <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="css/stylesheet.css">
 
-        
+        <!--Script for cordova functionalities-->
+        <script src="cordova.js"></script>
+
+        <script src="js/index.js"></script>
+        <!-- Include the jQuery library (Necessary to maintain web sql db) -->
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="js/jquery-3.5.1.min.js"></script>  
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="js/invokeDatabase.js"></script>
+        <script src="js/tracingQueries.js"></script>
+        <script src="js/links.js"></script>
         
         
     </head>
@@ -32,26 +42,28 @@
             <button id="qrCodeScanner" class="linkButton">QR check-in</button>
             <button type="button" class="menuButton" onclick="showManualPage()">Manual Check-in</button> 
             <button type="button" class="menuButton" onclick="showReportPage()">Report Test Result</button>
-            <a href="https://www.uea.ac.uk/about/news/statements/covid-19-advice" >General Advice</a>
+            <button class="linkButton"><a href="https://www.uea.ac.uk/about/news/statements/covid-19-advice">General Advice</button></a>
             <button type="button" class="menuButton" onclick="showAboutPage()">About</button> 
+            
         
         </div>
         <div id="qrCheckin" class="appSPA">
             <div class="topSection">
                 <h1>UTracer</h1>
-                <img src="img/logo.png" id="logo" alt="Main menu logo" >
+                
                 <hr>
             </div>
             <!-- QR Scanner check-in page -->
           <h3>Please confirm your session check-in!</h3>
           <h4>You are checking in to:</h4>
+          <input id="qrDeviceId" type="text" placeholder="Device ID"/>
             <p id="yourDeviceId"></p>
 
             <p id="seatData"></p>
 
             <p id="locationData"></p>
 
-          <input id="qrDeviceId" type="text" placeholder="Device ID"/>
+          
             
           <input id="qrseatId" hidden type="text" placeholder="Seat Number" />
             
@@ -66,17 +78,41 @@
         <div id="manualPage" class="appSPA">
             <div class="topSection">
                 <h1>UTracer</h1>
-                <img src="img/logo.png" id="logo" alt="Main menu logo" >
+                
                 <hr>
             </div>
             <h1>Manual Check-in</h1>
-            
+                <label for="deviceIdManual">Device ID:</label>
                 <input id="deviceIdManual" name="deviceid" class="inputSection" type="text" placeholder="Device ID">
                 
+                <label for="seatIdManual">Seat Number:</label>
                 <input id="seatIdManual" class="inputSection" name="seatid" type="number" placeholder="Seat Number">
 
-            
-                <input id="locationManual" class="inputSection" name="locationmanual" type="text" placeholder="Location">
+
+                <label for="locationManual">Choose a lab:</label>
+                    <select name="locationmanual" class="inputSection" id="locationManual">
+                    <optgroup label="CMP SCI">
+                        <option value="CMPSCI">CMP SCI</option>
+                    </optgroup>
+                    <optgroup label="LAB 1">
+                        <option value="LAB1">LAB 1</option>
+                    </optgroup>
+                    <optgroup label="LAB 2">
+                        <option value="LAB2">LAB 2</option>
+                    </optgroup>
+                    <optgroup label="AGAC Lab">
+                        <option value="AGACLAB">AGAC LAB</option>
+                    </optgroup>
+                    <optgroup label="Cyber Lab">
+                        <option value="CYBERLAB">CYBER LAB</option>
+                    </optgroup>
+                    <optgroup label="Data Science">
+                        <option value="DATASCIENCE">DATA SCIENCE</option>
+                    </optgroup>
+                    <optgroup label="MSC LAB">
+                        <option value="MSCLAB">MSC LAB</option>
+                    </optgroup>
+                    </select>
 
                 <button class="linkConfirm" id="manualSubmission" onclick="addManualCheckIn()">Confirm</button>
             
@@ -91,22 +127,30 @@
                 <h2>Report virus exposure</h2>
                 <hr>
             </div>
-        
-            
             <h3>Select checkboxes that apply to your situation.</h3>
             <p id="reportPara">If you none of the boxes apply to you, you don't need to do anything apart from checking in. 
                 When you test positive or are exposed to someone who tested positive please come back and select the 
                 applicable option.</p>
+                <label for="deviceIdReport">Device ID:</label>
             <input id="deviceIdReport" type="text" class="inputSection" placeholder="Device ID" />
+            <p>Tick this box if you have tested positive.</p>
         <div class="reportBox">
             <label for="resultID" class="labelReport"> 
                 <b>Positive Test Result</b>
                 
             </label>
             
-            <input id="resultID"  type="checkbox" value="0" name="resultID">
+            <input id="resultID"  type="checkbox" class="checkBoxStyling" value="0" name="resultID">
         </div>
             <br>
+            <p>Tick this box if you have been exposed to someone who tested positive in your vicinity.</p>
+            <div class="reportBox">
+                
+            <label for="exposureID" class="labelReport"> 
+                <b>Virus exposure</b>
+            </label>
+            <input id="exposureID" class="checkBoxStyling"  type="checkbox" value="0" name="exposure">
+         </div>
             <a class="linkConfirm" onclick="addTestResult()">Confirm</a>
 
             <div class="clear"></div>
@@ -116,34 +160,39 @@
             </div>
         
         </div>
-
-        
-        
         <!-- About the app page -->
         <div id="aboutPage" class="appSPA">
             <div class="topSection">
                 <h1>UTracer</h1>
-                <img src="img/logo.png" id="logo" alt="Main menu logo" >
+                
                 <hr>
             </div>
             
             <h1>About</h1>
+            <h5>How the app works</h5>
+            <p>UTracer is a contact tracing app that introduces a tracing technology without neccessity of having Bluetooth and 
+                location on, the app is aimed at protecting you against the virus and equally protecting your privacy. 
+                The app generates a unique device ID upon launching the app for the first time, your unique device ID will remain the same
+                throughout the usage of the app. <br> <br>
+                The app allows you to report positive exposure if you have tested positive or live with someone who did. By reporting your exposure
+                people who checked in the same location by either scanning a QR code or using manual check-in will receive notification alert. 
+                If you have received notification of potential exposure please remain in self-isolation and book a test.
+            </p>
+
+            <h5>About your data</h5>
+            <p>The app stores all your check-ins for 14 days, afterwards when your check-in counts up to 14 days, your check-in is deleted from the database.
+            
+            </p>
             <div class="back-button">
                 <span class="arrow" onclick="showIndexPage()"></span>
             </div>
     
         </div>
+
+        <div id="emailSection" class="appSPA">
+            <button type="button" class="menuButton" onclick="emailComposer()">Send Email to Staff</button> 
+        </div>
         
         
-        
-        <script src="cordova.js"></script>
-        <script src="js/index.js"></script>
-        <!-- Include the jQuery library (Necessary to maintain web sql db) -->
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="js/jquery-3.5.1.min.js"></script>  
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script src="js/invokeDatabase.js"></script>
-        <script src="js/tracingQueries.js"></script>
-        <script src="js/links.js"></script>
     </body>
 </html>

@@ -22,19 +22,9 @@ body {
 }
 
 a {
-    width: 54%;
-    background-color: #ffffff;
-    display: inline-block;
-    border: solid;
-    table-layout: fixed;
-    border-collapse: collapse;
-    color: rgb(0, 0, 0);
-    padding: 15px 32px;
-    text-align: center;
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+    color: rgb(0, 0, 0);
+    padding: 20px;
 }
 
 /* Menu styling for a tag buttons */
@@ -58,10 +48,9 @@ a {
     background-color: #8c52ff;
     display: inline-block;
     font-weight: bold;
-    width: 70%;
     table-layout: fixed;
     border-collapse: collapse;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -99,7 +88,7 @@ a {
 #logo {
     position:absolute; 
 	top: -10.5%; 
-	left: 18.5%; 
+	left: 0.5%; 
 }
 
 #socialDistancing {
@@ -127,21 +116,6 @@ a {
     margin: 4px 2px;
   }
 
-.aStyling {
-    background-color: #ffffff;
-    display: inline-block;
-    width: 55%;
-    table-layout: fixed;
-    border: solid;
-    border-collapse: collapse;
-    color: rgb(0, 0, 0);
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-}
 
 .inputSection { 
     display: block;
@@ -154,25 +128,24 @@ a {
 .labelReport {
     float:left;
     margin: 5px 0px;
-    height:100px;
+
     width:100px;
     position:relative;
 
 }
 
-#resultID {
-    float:left;
-    margin: 25px 15px 5px 0px;
-
-    position:relative;
-    left: 30%;
+.checkBoxStyling {
+    position: relative;
+    top: 50%;
+    right: 10%;
 }
+
 
 .reportBox {
     height:30px;
     padding-bottom: 35px;
-    width: 50%;
-    margin: 38px 80px;
+
+    width: 100%;
     border: 1px solid black;
     border-radius: 5px;
     z-index: -1;
@@ -189,7 +162,7 @@ a {
 	margin: 0 auto;
 	padding: 37px 28px;
 	border-radius: 50%;
-    position:fixed; 
+    position: absolute; 
 	top: 0; 
 	left: -3%; 
 }

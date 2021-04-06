@@ -1,8 +1,7 @@
 /*
 *   Author: znu16qvu, 100170451
 *
-*   Description: JS to open database with Web SQL which creates tracing table to store the details of contact
-                 tracing sign ins.
+*   Description: JS to open database with Web SQL.
 *
 *   Version: 1.0
 */
@@ -29,10 +28,10 @@ var invokeDatabase = {
                 // Delete data that is older than 14 days since registered in the database
    
                 tx.executeSql("DELETE FROM tracing WHERE whenAtDate < datetime('now', '-14 day')"),
-                //tx.executeSql("DELETE FROM tracing")
+                tx.executeSql("DELETE FROM tracing")
 
                     // If the database is created along with the table run this to the console.
-                    console.log("Database running..."),
+                    console.log("Tracing table created..."),
                     function(tx, results) {
                         
                     },
@@ -44,17 +43,17 @@ var invokeDatabase = {
         );
 
         this.db.transaction(function(tx) {
-            /* Create table tracing to store check ins
+            /* Create table results to store positve virus exposure
              */
             tx.executeSql("CREATE TABLE IF NOT EXISTS results(testid INTEGER UNIQUE PRIMARY KEY," +
-            " deviceID TEXT NOT NULL, test BOOLEAN NOT NULL CHECK (test IN (0,1))," +
+            " deviceID TEXT NOT NULL, test BOOLEAN NOT NULL CHECK (test IN (0,1)), exposure BOOLEAN NOT NULL CHECK (test IN (0,1))," +
             " whenAtDate DATE NOT NULL DEFAULT CURRENT_DATE," +
             " whenAtTime TIMESTAMP DATETIME NOT NULL DEFAULT(STRFTIME('%H:%M', 'NOW', 'localtime')))"),
             [],
             // Delete data that is older than 14 days since registered in the database
 
             tx.executeSql("DELETE FROM results WHERE whenAtDate < datetime('now', '-14 day')"),
-            //tx.executeSql("DELETE FROM results")
+            tx.executeSql("DELETE FROM results")
 
                 // If the database is created along with the table run this to the console.
                 console.log("Result table created..."),

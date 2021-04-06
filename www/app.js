@@ -1,6 +1,10 @@
+// Declare node.js extensions
 const express = require('express');
 
 const app = express();
+
+
+app.use(express.json());
 
 const port = 3000;
 
@@ -13,7 +17,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 // listen for requests
 app.listen(port);
 
-mongoose.connect('mongodb+srv://znu16qvu:test1234@utracer.sohya.mongodb.net/tracing?retryWrites=true&w=majority',
+// Unique URL for mongoDB Connection
+mongoose.connect('mongodb+srv://znu16qvu:yU7Qc8BYyozjS5TY@utracer.sohya.mongodb.net/tracing?retryWrites=true&w=majority',
 {useNewUrlParser: true, useUnifiedTopology: true});
 
 const db = mongoose.connection;
@@ -24,11 +29,9 @@ db.once('open', function() {
   console.log('Connection to MongoDB established!');
 });
 
-
-
 console.log('Server running on port: ' + port);
 
-app.use(express.static('www'));
+//app.use(express.static('www'));
 
 // create a tracing schema
 const tracingSchema = {
@@ -37,17 +40,35 @@ const tracingSchema = {
     location: String
 }
 
-const tracing = mongoose.model("tracing", tracingSchema)
+const tracing = mongoose.model("manualCheckin", tracingSchema)
 
+// Store Device ID that reported positive exposure
+const reportingSchema = {
+    reportedDevice: String,
+    
+}
+
+const reporting = mongoose.model("reportedDevices", reportingSchema)
+
+// Post from form to MongoDB
+app.post("/", function(req, res) {
+    const newReport = new reporting({
+        reportedDevice: req.body.reportedDevice,
+    });
+    newReport.save();
+    res.redirect('/');
+});
+
+// Get dbAdmin.html to display as database start up.
 app.get('/', (req, res) => {
 
 
-    res.sendFile('index.html', {root : __dirname});
+    res.sendFile('dbAdmin.html', {root : __dirname});
     
 });
 
 // req.body.THEHTMLNAMETAGHERE
-
+// Post from form to MongoDB
 app.post("/", function(req, res) {
     const newTrace = new tracing({
         deviceId: req.body.deviceid,
@@ -55,8 +76,8 @@ app.post("/", function(req, res) {
         location: req.body.locationmanual
     });
     newTrace.save();
+    // On saved result go back to main '/' homepage
     res.redirect('/');
 });
 
-app.use(express.json());
 

@@ -19,17 +19,17 @@ var tracingQueries= {
             );
         })
     },
-    storeTestResult: function (resultDeviceID, tests) {
+    storeTestResult: function (resultDeviceID, tests, exposure) {
         
         invokeDatabase.db.transaction(function (tx) {
             // Enter check in data and store in database
             tx.executeSql(
-                "INSERT INTO results (deviceID, test) VALUES (?,?)",
-                [resultDeviceID, tests],
+                "INSERT INTO results (deviceID, test, exposure) VALUES (?,?,?)",
+                [resultDeviceID, tests, exposure],
                 function (tx, result) {
                                       
                    // Output in console the field that is added to the database
-                    console.log("Device ID: " + resultDeviceID +  " Reported test result! " + tests);
+                    console.log("Device ID: " + resultDeviceID +  " Reported test result! " + tests + " " + exposure);
 
                 },
                 function (tx, error) {

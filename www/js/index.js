@@ -1,8 +1,8 @@
 /*
-*   Author: znu16qvu, 100170451, Lukasz Zbozen
+*   Author: znu16qvu, 100170451
 *
 *   Description: Javascript to run functions across the whole mobile app.
-*   
+*   Reference: https://cordova.apache.org/docs/en/latest/
 *   Version: 1.0
 */
 
@@ -25,15 +25,18 @@ function onDeviceReady() {
     uniqueDeviceID = device.uuid;
 
     
-
+    // On app start up assign unique device ID to input fields
     document.getElementById('deviceIdManual').value=uniqueDeviceID;
     document.getElementById('deviceIdReport').value=uniqueDeviceID;
 
+    // Call database script to create web sql object
     invokeDatabase.createDatabase();
   
     
     // When user releases finger from the selected option - ("touchend"), run qrCodeScanner function.
     document.querySelector("#qrCodeScanner").addEventListener("touchend", qrCodeScanner, false);
+
+    // getContacts();
     
 }
 
@@ -111,6 +114,8 @@ function addQRCheckIn() {
     var qrSeat = $('#qrseatId').val();
     var qrlocationSession = $('#qrLocation').val();
 
+
+    // If QR code is null display error message
     if (qrSeat == "" && qrDeviceId == "" &&  qrlocationSession == "") { 
         swal({
             title: "You must scan a QR code!",
@@ -120,6 +125,7 @@ function addQRCheckIn() {
             });
     } else {
         tracingQueries.storeContact(qrDeviceId ,qrSeat, qrlocationSession);
+        // On successful check-in store to Web sql and output message
 
         swal({
             title: "You have checked in successfully!",
@@ -130,12 +136,15 @@ function addQRCheckIn() {
         
         //tracingQueries.storeContact(qrDeviceId ,qrSeat, qrModuleCode, qrlocationSession);
 
+        // Empty fields to null
         $("#qrseatId").val("");
 
         $("#qrmoduleCode").val("");
 
         $("#qrLocation").val("");
+
         
+        // Return to index page
         document.getElementById("qrCheckin").style.display="none";
         document.getElementById("indexPage").style.display="block";
         
@@ -143,18 +152,26 @@ function addQRCheckIn() {
     
 }
 
+// On press of notification bell check current exposure (No new exposures || send notification to mobile device)
 function notify() {
     getContacts();
 }
 
-
+// Global arrays for device comparing logic
 var positiveDevices;
 var negativeDevices;
+
+var positiveLocations;
+var negativeLocations;
+
+var negativeDates;
+var positiveDates;
+
 function getContacts () {
     invokeDatabase.db.transaction(
 
         function checkTrace(tx) {
-            
+            // Select from database
             tx.executeSql("SELECT DISTINCT tracing.*, results.test from tracing LEFT JOIN results ON tracing.deviceID = results.deviceID",
             [],
             function (tx, results) {
@@ -165,13 +182,13 @@ function getContacts () {
                 positiveDevices = []; 
                 negativeDevices = [];
 
-                var positiveLocations = [];
-                var negativeLocations = [];
+                positiveLocations = [];
+                negativeLocations = [];
                 
-                var negativeDates = [];
-                var positiveDates = [];
+                negativeDates = [];
+                positiveDates = [];
                 
-                // Loop the contacts in database
+                // Loop each new contact trace in Web sql
                 for(var i = 0; i<lenTracing; i++){
                     var mobileDevice = results.rows.item(i).deviceID;
                     var testResult = results.rows.item(i).test;
@@ -197,9 +214,11 @@ function getContacts () {
 
                         positiveDates.push(dateCheck);
 
+                        
                     }
                 }
                 
+                // Output to console to test correct storage
                 console.log("Positive Devices: " + positiveDevices);
                 console.log(positiveLocations);
 
@@ -213,11 +232,11 @@ function getContacts () {
 
                 
                 // Check if location element in negativeDevices array also exists in positiveDevices and is greater or equal to 1
-                const isLocationTrue = negativeLocations.some(locationString=> positiveLocations.includes(locationString) >= 2);
+                const isLocationTrue = negativeLocations.some(locationString=> positiveLocations.includes(locationString) >= 1);
 
 
                 // Check if date element in negativeDates array also exists in positiveDates and is greater or equal to 1
-                const isDateTheSame = negativeDates.some(dateString=> positiveDates.includes(dateString) >= 2);
+                const isDateTheSame = negativeDates.some(dateString=> positiveDates.includes(dateString) >= 1);
 
                 console.log("Is positive test result reported in the same location? " + isLocationTrue);
 
@@ -238,12 +257,17 @@ function getContacts () {
 
                     // Display mobile notification if condition is met (mobile build only)
                     cordova.plugins.notification.local.schedule({
-                        title: 'Contact Tracing Exposure Alert!',
-                        text: 'You have been exposed in an area of someone who tested positive. Please book a test and self-isolate!',
+                        title: 'Contact Tracing Exposure!',
+                        text: 'You have been exposed in an area of someone who reported positive exposure. Please book a test and self-isolate!',
                         foreground: true
                     });
+
+                    document.getElementById("emailSection").style.display="block";
+
                 } else {
                     
+                    document.getElementById("emailSection").style.display="none";
+
                     // If no exposures output an alert
                     swal({
                         title: "No new exposure notifications.",
@@ -251,12 +275,23 @@ function getContacts () {
                         icon: "success",
                         button: "Confirm",
                         });
+
                 }
 
             })
     })
 }
 
+// Function to generate pre-defined emails to send to online db
+function emailComposer () {
+    cordova.plugins.email.open({
+        to:      'znu16qvu@uea.ac.uk',
+        cc:      'tracingDBAdmin@uea.ac.uk',
+        bcc:     [''],
+        subject: 'Virus Exposure Report',
+        body:    'Following devices reported positive exposure. Device ID: ' + positiveDevices + ' at ' + positiveLocations + ' on ' +  positiveDates 
+    });
+}
 
 
 // Function for reporting positive test result
@@ -264,19 +299,30 @@ function addTestResult() {
     
     var reportDeviceID = $('#deviceIdReport').val();
 
+    
+
+    // Store checkboxes as 1 for true and 0 for false
     var tests;
     $('#resultID').on('change', function(){
         tests = this.checked ? 1 : 0;
      }).change();
+
+     var reportExposure;
+     $('#exposureID').on('change', function(){
+        reportExposure = this.checked ? 1 : 0;
+     }).change();
      
     
-
-    if (tests == 1) {
-        tracingQueries.storeTestResult(reportDeviceID, tests);
+    // If checkboxes is ticked store exposure to Web SQL
+    if (tests == 1 || reportExposure == 1) {
+        tracingQueries.storeTestResult(reportDeviceID, tests, reportExposure);
 
         // Uncheck test result checkbox
         $("#resultID").prop('checked', false);
         
+        $("exposureID").prop('checked', false);
+        
+        // Confirmation message
         swal({
             title: "Thank you for submitting your test result!",
             text: "Press the button to proceed",
@@ -284,13 +330,15 @@ function addTestResult() {
             button: "Confirm",
             });
         
+        // When checkbox submitted go back to index page
         document.getElementById("reportPage").style.display="none";
         document.getElementById("indexPage").style.display="block";
 
     } else {
+        // When no checkbox ticked output message
         swal({
             title: "Select ticks that apply to your situation!",
-            text: "If you none of the boxes apply to you, you don't need to do anything apart from checking in.",
+            text: "If none of the boxes apply to you, you don't need to do anything apart from checking in.",
             icon: "warning",
             button: "Confirm",
         });
@@ -304,33 +352,20 @@ function addManualCheckIn() {
     var deviceID = $('#deviceIdManual').val();
     var seat = $('#seatIdManual').val();
 
-    // Assign location to capital letters after submission to Web SQL
-    var locationSession = $('#locationManual').val().toUpperCase();
+    // Assign location to upper case characters after submission to Web SQL
+    var locationSession = $('#locationManual').val();
 
-    //Restrict user from entering spaces in the input field
-    $('#locationManual').keypress(function (evt) {
-        var keycode = evt.charCode || evt.keyCode;
-        if (keycode == 32) {
-            return false;
-        }
-    });
-
-    
-
-    const labsArray = ['CMPSCI', 'AGACLAB', 'CYBERLAB', 'DATASCIENCE', 'LAB1', 'LAB2', 'MSCLAB',
-    'cmpsci', 'agaclab', 'cyberlab', 'datascience', 'lab1', 'lab2', 'msclab'];
-    
         // Check for empty fields and if array matches the input.
-       if (seat == "" || locationSession == "" || labsArray.indexOf(locationSession) < 0) {
+       if (seat == "" || locationSession == "") {
         swal({
-            title: "Please enter valid information!",
-            text: "This is written on your seat...",
+            title: "Please enter valid check-in details!",
+            text: "This is written on your seat/PC...",
             icon: "warning",
             button: "Confirm",
-        });
+            });
 
         } else {
-        
+        // Submit to Web SQL followed by confirmation message
         tracingQueries.storeContact(deviceID, seat, locationSession);
         $("#seatIdManual").val("");
         $("#moduleCodeManual").val("");
