@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.listen(port);
 
 // Unique URL for mongoDB Connection
-mongoose.connect('mongodb+srv://znu16qvu:yU7Qc8BYyozjS5TY@utracer.sohya.mongodb.net/tracing?retryWrites=true&w=majority',
+mongoose.connect('',
 {useNewUrlParser: true, useUnifiedTopology: true});
 
 const db = mongoose.connection;

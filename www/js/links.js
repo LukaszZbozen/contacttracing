@@ -5,6 +5,7 @@ function showIndexPage(){
     document.getElementById("manualPage").style.display="none";
     document.getElementById("reportPage").style.display="none";
     document.getElementById("aboutPage").style.display="none";
+    document.getElementById("timerSection").style.display="none";
 }
 function qrCheckin(){
     document.getElementById("indexPage").style.display="none";
@@ -12,6 +13,7 @@ function qrCheckin(){
     document.getElementById("manualPage").style.display="none";
     document.getElementById("reportPage").style.display="none";
     document.getElementById("aboutPage").style.display="none";
+    document.getElementById("timerSection").style.display="none";
 }
 
 function showManualPage(){
@@ -20,6 +22,7 @@ function showManualPage(){
     document.getElementById("manualPage").style.display="block";
     document.getElementById("reportPage").style.display="none";
     document.getElementById("aboutPage").style.display="none";
+    document.getElementById("timerSection").style.display="none";
 }
 function showReportPage(){
     document.getElementById("indexPage").style.display="none";
@@ -27,6 +30,7 @@ function showReportPage(){
     document.getElementById("manualPage").style.display="none";
     document.getElementById("reportPage").style.display="block";
     document.getElementById("aboutPage").style.display="none";
+    document.getElementById("timerSection").style.display="none";
 }
 function showAboutPage(){
     document.getElementById("indexPage").style.display="none";
@@ -34,4 +38,14 @@ function showAboutPage(){
     document.getElementById("manualPage").style.display="none";
     document.getElementById("reportPage").style.display="none";
     document.getElementById("aboutPage").style.display="block";
+    document.getElementById("timerSection").style.display="none";
+}
+
+function showTimerSection() {
+    document.getElementById("indexPage").style.display="none";
+    document.getElementById("qrCheckin").style.display="none";
+    document.getElementById("manualPage").style.display="none";
+    document.getElementById("reportPage").style.display="none";
+    document.getElementById("aboutPage").style.display="none";
+    document.getElementById("timerSection").style.display="block";
 }

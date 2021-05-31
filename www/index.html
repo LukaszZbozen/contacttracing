@@ -16,7 +16,7 @@
 
         <!--Script for cordova functionalities-->
         <script src="cordova.js"></script>
-
+        
         <script src="js/index.js"></script>
         <!-- Include the jQuery library (Necessary to maintain web sql db) -->
         <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -34,14 +34,24 @@
         <div class="topSection">
             <h1>UTracer</h1>
             <img src="img/logo.png" id="logo" alt="Main menu logo" >
-            <img src="img/tranBell.png" id=notificationBell onclick="getContacts()" alt="Notification Bell" >
+            <img src="img/tranBell.png" id="notificationBell" onclick="getContacts()" alt="Notification Bell" >
             <hr class="moveHR">
         </div>
-        <img src="img/risk.png" id="socialDistancing" alt="Social Distancing Image" >
 
+        
+
+        <img src="img/risk.png" id="socialDistancing" alt="Social Distancing Image" >
+        
+
+            <!-- SPA navigation buttons -->
             <button id="qrCodeScanner" class="linkButton">QR check-in</button>
-            <button type="button" class="menuButton" onclick="showManualPage()">Manual Check-in</button> 
-            <button type="button" class="menuButton" onclick="showReportPage()">Report Test Result</button>
+            <button type="button" class="menuButton" onclick="showManualPage()">Manual Check-in</button>
+            <!-- Show Email Section only on virus exposure-->
+            <div id="emailSection" class="appSPA">
+                <button type="button" id="emailSender" class="menuButton" onclick="emailComposer()">Send Email to Staff</button> 
+            </div>
+            <button type="button" class="menuButton" onclick="showReportPage()">Report Exposure</button>
+            <button type="button" class="menuButton" onclick="showTimerSection()">Self-Isolation Timer</button>
             <button class="linkButton"><a href="https://www.uea.ac.uk/about/news/statements/covid-19-advice">General Advice</button></a>
             <button type="button" class="menuButton" onclick="showAboutPage()">About</button> 
             
@@ -56,8 +66,10 @@
             <!-- QR Scanner check-in page -->
           <h3>Please confirm your session check-in!</h3>
           <h4>You are checking in to:</h4>
-          <input id="qrDeviceId" type="text" placeholder="Device ID"/>
-            <p id="yourDeviceId"></p>
+          
+           <!-- Input for different of difference device ID
+            <input id="qrDeviceId" type="text" placeholder="Device ID"/> --> 
+           <p id="yourDeviceId"></p>
 
             <p id="seatData"></p>
 
@@ -82,6 +94,7 @@
                 <hr>
             </div>
             <h1>Manual Check-in</h1>
+            
                 <label for="deviceIdManual">Device ID:</label>
                 <input id="deviceIdManual" name="deviceid" class="inputSection" type="text" placeholder="Device ID">
                 
@@ -91,27 +104,17 @@
 
                 <label for="locationManual">Choose a lab:</label>
                     <select name="locationmanual" class="inputSection" id="locationManual">
-                    <optgroup label="CMP SCI">
+                    <optgroup label="Computer Science Labs">
                         <option value="CMPSCI">CMP SCI</option>
-                    </optgroup>
-                    <optgroup label="LAB 1">
                         <option value="LAB1">LAB 1</option>
-                    </optgroup>
-                    <optgroup label="LAB 2">
                         <option value="LAB2">LAB 2</option>
-                    </optgroup>
-                    <optgroup label="AGAC Lab">
                         <option value="AGACLAB">AGAC LAB</option>
-                    </optgroup>
-                    <optgroup label="Cyber Lab">
                         <option value="CYBERLAB">CYBER LAB</option>
-                    </optgroup>
-                    <optgroup label="Data Science">
                         <option value="DATASCIENCE">DATA SCIENCE</option>
-                    </optgroup>
-                    <optgroup label="MSC LAB">
                         <option value="MSCLAB">MSC LAB</option>
+
                     </optgroup>
+                    
                     </select>
 
                 <button class="linkConfirm" id="manualSubmission" onclick="addManualCheckIn()">Confirm</button>
@@ -124,7 +127,7 @@
     
         <div id="reportPage" class="appSPA">
             <div class="topSection">
-                <h2>Report virus exposure</h2>
+                <h2>Report Exposure</h2>
                 <hr>
             </div>
             <h3>Select checkboxes that apply to your situation.</h3>
@@ -163,12 +166,10 @@
         <!-- About the app page -->
         <div id="aboutPage" class="appSPA">
             <div class="topSection">
-                <h1>UTracer</h1>
+                <h1>About</h1>
                 
                 <hr>
             </div>
-            
-            <h1>About</h1>
             <h5>How the app works</h5>
             <p>UTracer is a contact tracing app that introduces a tracing technology without neccessity of having Bluetooth and 
                 location on, the app is aimed at protecting you against the virus and equally protecting your privacy. 
@@ -189,10 +190,44 @@
     
         </div>
 
-        <div id="emailSection" class="appSPA">
-            <button type="button" class="menuButton" onclick="emailComposer()">Send Email to Staff</button> 
+        
+
+        <div id="timerSection" class="appSPA">
+            
+            <h3>Self-isolation timer</h3>
+            <hr>
+            <p>
+                Please refer to government guidance on how long you should isolate for, you can select a date to start self-isolation counter.
+            </p>
+        <div class="clock-input">
+            <input type="date" name="time-to" class="time-to" id="time-to" value="" onchange="calcTime(this.value)">
         </div>
         
+            <div class="clock-column">
+                <p class="clock-day clock-timer"></p>
+                <p id="clock-d">Days</p>
+            </div>
+        
+            <div class="clock-column">
+                <p class="clock-hours clock-timer"></p>
+                <p id="clock-h" class="clock-hours">Hours</p>
+            </div>
+        
+            <div class="clock-column">
+                <p class="clock-minutes clock-timer"></p>
+                <p id="clock-m">Minutes</p>
+            </div>
+        
+            <div class="clock-column">
+                <p class="clock-seconds clock-timer"></p>
+                <p id="clock-s">Seconds</p>
+            </div>
+
+            <div class="back-button">
+                <span class="arrow" onclick="showIndexPage()"></span>
+            </div>
+
+        </div>
         
     </body>
 </html>

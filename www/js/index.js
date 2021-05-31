@@ -13,6 +13,9 @@ document.addEventListener("deviceready", onDeviceReady, false);
 // Global variable for unique device ID
 var uniqueDeviceID;
 
+/*
+* Run on onDeviceReady function when the app starts.
+*/
 function onDeviceReady() {
     
     console.log("Mobile device running...");
@@ -24,19 +27,27 @@ function onDeviceReady() {
     //          The integer is generated on the device's first boot
     uniqueDeviceID = device.uuid;
 
-    
+    // Call database script to create web sql object
+    invokeDatabase.createDatabase();
+
+
     // On app start up assign unique device ID to input fields
     document.getElementById('deviceIdManual').value=uniqueDeviceID;
     document.getElementById('deviceIdReport').value=uniqueDeviceID;
 
-    // Call database script to create web sql object
-    invokeDatabase.createDatabase();
+    
   
     
     // When user releases finger from the selected option - ("touchend"), run qrCodeScanner function.
     document.querySelector("#qrCodeScanner").addEventListener("touchend", qrCodeScanner, false);
 
-    // getContacts();
+    // Call getContacts function to check for virus exposure on each start up
+    getContacts();
+
+    // Get self-isolation timer
+    loadEventListeners();
+
+    
     
 }
 
@@ -93,11 +104,11 @@ function qrCodeScanner(){
     // QR code settings
         {
         preferFrontCamera : false, // iOS and Android
-        showFlipCameraButton : true, // iOS and Android
+        showFlipCameraButton : false, // iOS and Android
         showTorchButton : true, // iOS and Android
         torchOn: false, // Android, launch with the torch switched on (if available)
         prompt : "Aim your camera at the QR code!", // Android
-        resultDisplayDuration: 1000, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+        resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
         formats : "QR_CODE", // default: all but PDF_417 and RSS_EXPANDED
         disableSuccessBeep: true // iOS and Android
         }
@@ -171,8 +182,9 @@ function getContacts () {
     invokeDatabase.db.transaction(
 
         function checkTrace(tx) {
+            var start = window.performance.now();
             // Select from database
-            tx.executeSql("SELECT DISTINCT tracing.*, results.test from tracing LEFT JOIN results ON tracing.deviceID = results.deviceID",
+            tx.executeSql("SELECT DISTINCT tracing.*, results.test, results.exposure from tracing LEFT JOIN results ON tracing.deviceID = results.deviceID",
             [],
             function (tx, results) {
                 var lenTracing = results.rows.length;
@@ -192,13 +204,14 @@ function getContacts () {
                 for(var i = 0; i<lenTracing; i++){
                     var mobileDevice = results.rows.item(i).deviceID;
                     var testResult = results.rows.item(i).test;
+                    var exposureResult = results.rows.item(i).exposure;
                     var locationCheck = results.rows.item(i).location;
                     var dateCheck = results.rows.item(i).whenAtDate;
                     var timeCheck = results.rows.item(i).whenAtTime;
                     
 
                     // If device did not report test result add to negativeDevices array otherwise positiveDevices array.
-                    if (testResult == null) {
+                    if (testResult == null || exposureResult == null) {
                         negativeDevices.push("Device ID: " + mobileDevice);
 
                         negativeLocations.push(locationCheck);
@@ -249,9 +262,9 @@ function getContacts () {
                     
                     console.log("Notification displays on mobile devices...");
                     
-                    // Set mobile LED to blink
+                    // Set mobile LED to blink in red every 2 seconds
                     cordova.plugins.notification.local.setDefaults({
-                        led: { color: '#FFFFFF', on: 500, off: 500 },
+                        led: { color: '#f21919', on: 2000, off: 2000 },
                         vibrate: false
                     });
 
@@ -277,7 +290,10 @@ function getContacts () {
                         });
 
                 }
-
+                // Calculate time to run the function
+                var end = window.performance.now();
+                var dur = end - start;
+                console.log(dur);
             })
     })
 }
@@ -289,7 +305,8 @@ function emailComposer () {
         cc:      'tracingDBAdmin@uea.ac.uk',
         bcc:     [''],
         subject: 'Virus Exposure Report',
-        body:    'Following devices reported positive exposure. Device ID: ' + positiveDevices + ' at ' + positiveLocations + ' on ' +  positiveDates 
+        body:    'Following devices reported positive exposure. Device ID: ' + positiveDevices + 
+        ' at ' + positiveLocations + ' on ' +  positiveDates + '.'
     });
 }
 
@@ -313,7 +330,7 @@ function addTestResult() {
      }).change();
      
     
-    // If checkboxes is ticked store exposure to Web SQL
+    // If either of checkboxes are ticked store exposure to Web SQL
     if (tests == 1 || reportExposure == 1) {
         tracingQueries.storeTestResult(reportDeviceID, tests, reportExposure);
 
@@ -379,3 +396,58 @@ function addManualCheckIn() {
             });
        }   
 }
+
+
+// Function to calculate self-isolation
+function loadEventListeners() {
+    document.addEventListener('DOMContentLoaded', function() { calcTime(); });
+  };
+  
+  var timeTo = document.getElementById('time-to'),
+      date,
+      now = new Date(),
+      newYear = new Date().getTime(),
+      startTimer = '';
+  
+  // calculate date, hour, minute and second
+  function calcTime(dates) {
+    //ui variables
+    clearInterval(startTimer);
+  
+    if(typeof(dates) == 'undefined'){
+      date = new Date(newYear).getTime();
+    }else {
+      date = new Date(dates).getTime();
+    }
+  
+    function updateTimer(date){
+  
+      var now = new Date().getTime();
+      var distance = date - now;
+  
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+      // select element
+      document.querySelector('.clock-day').innerHTML = days;
+      document.querySelector('.clock-hours').innerHTML = hours;
+      document.querySelector('.clock-minutes').innerHTML = minutes;
+      document.querySelector('.clock-seconds').innerHTML = seconds;
+  
+      if(now >= date){
+        clearInterval(startTimer);
+        document.querySelector('.clock-day').innerHTML = 'Self-Isolation';
+        document.querySelector('.clock-hours').innerHTML = 'Finished';
+        document.querySelector('.clock-minutes').innerHTML = '';
+        document.querySelector('.clock-seconds').innerHTML = '';
+        
+      }
+    }
+  
+    startTimer = setInterval(function() { updateTimer(date); }, 1000);
+  
+  }
+  

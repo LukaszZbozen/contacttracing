@@ -51,7 +51,7 @@
 	<preference name='phonegap-version' value='cli-6.5.0' />
 	<preference name='pgb-builder-version' value='2' />
 
-<preference name="SplashScreenDelay" value="5000" />
+<preference name="SplashScreenDelay" value="3000" />
 <splash src="/www/img/screen.png" />
 <icon src="/www/img/logo.png" platform="android" width="57" height="57" density="mdpi" />
 <icon src="/www/img/logo.png" platform="ios" width="57" height="57" density="mdpi" />

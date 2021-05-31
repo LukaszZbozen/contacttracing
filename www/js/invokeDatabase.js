@@ -14,7 +14,7 @@ var invokeDatabase = {
             "tracing.db",
             "1.0",
             "Contact Tracing Database",
-            15000);
+            1024 * 32);
             
         this.db.transaction(function(tx) {
                 /* Create table tracing to store check ins
@@ -26,9 +26,9 @@ var invokeDatabase = {
                 " whenAtTime TIMESTAMP  DATETIME NOT NULL DEFAULT(STRFTIME('%H:%M', 'NOW', 'localtime')))"),
                 [],
                 // Delete data that is older than 14 days since registered in the database
-   
-                tx.executeSql("DELETE FROM tracing WHERE whenAtDate < datetime('now', '-14 day')"),
-                tx.executeSql("DELETE FROM tracing")
+
+                tx.executeSql("DELETE FROM tracing WHERE whenAtDate < datetime('now', '-0 day')")
+                
 
                     // If the database is created along with the table run this to the console.
                     console.log("Tracing table created..."),
@@ -46,14 +46,14 @@ var invokeDatabase = {
             /* Create table results to store positve virus exposure
              */
             tx.executeSql("CREATE TABLE IF NOT EXISTS results(testid INTEGER UNIQUE PRIMARY KEY," +
-            " deviceID TEXT NOT NULL, test BOOLEAN NOT NULL CHECK (test IN (0,1)), exposure BOOLEAN NOT NULL CHECK (test IN (0,1))," +
+            " deviceID TEXT NOT NULL, test BOOLEAN NOT NULL CHECK (test IN (0,1)), exposure BOOLEAN NOT NULL CHECK (exposure IN (0,1))," +
             " whenAtDate DATE NOT NULL DEFAULT CURRENT_DATE," +
             " whenAtTime TIMESTAMP DATETIME NOT NULL DEFAULT(STRFTIME('%H:%M', 'NOW', 'localtime')))"),
             [],
             // Delete data that is older than 14 days since registered in the database
 
-            tx.executeSql("DELETE FROM results WHERE whenAtDate < datetime('now', '-14 day')"),
-            tx.executeSql("DELETE FROM results")
+            tx.executeSql("DELETE FROM results WHERE whenAtDate < datetime('now', '-0 day')")
+            
 
                 // If the database is created along with the table run this to the console.
                 console.log("Result table created..."),
@@ -66,9 +66,5 @@ var invokeDatabase = {
                 }
         }
     );
-
-
     }
-
-    
 };

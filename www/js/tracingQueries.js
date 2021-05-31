@@ -19,6 +19,7 @@ var tracingQueries= {
             );
         })
     },
+    // Store reported exposure from checkboxes (0,1)
     storeTestResult: function (resultDeviceID, tests, exposure) {
         
         invokeDatabase.db.transaction(function (tx) {
